@@ -57,7 +57,7 @@ public class Main extends javax.swing.JFrame {
                 .build();
     }
 
-    private RawMaterial toRawMaterial(String[] data) {
+    private RawMaterial toRawMaterial(String[] data) { //RawMaterial -- Materia Prima
         return RawMaterial.builder()
                 .name(data[0])
                 .cost(Integer.parseInt(data[1]))
@@ -240,7 +240,7 @@ public class Main extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private String buildInitVariables(int quantity) { //quantity- numero de productois
+    private String buildInitVariables(int quantity) { //quantity- numero de productos
         StringBuilder variables = new StringBuilder();
         for (int i = 0; i < quantity; i++) {
             variables.append("var int: ".concat("x").concat(String.valueOf(i + 1)
@@ -252,11 +252,11 @@ public class Main extends javax.swing.JFrame {
         return variables.toString();
     }
 
-    private String buildOutput(int quantity) {
+    private String buildOutput(int quantity, ProductDto[] products) {
         StringBuilder variables = new StringBuilder();
         variables.append("output[");
         for (int i = 0; i < quantity; i++) {
-            variables.append("\"Producto".concat(String.valueOf(i + 1)).concat(": \" ++ ")
+            variables.append("\"".concat(products[i].getName()).concat(" : \" ++ ")
                     .concat(" ")
                     .concat("show(").concat("x").concat(String.valueOf(i + 1)
                     .concat(")").concat(" ++ ")
@@ -467,7 +467,7 @@ public class Main extends javax.swing.JFrame {
         Map<Integer, String> contraints = buildConstraints(contraintValues, rawMaterialsQuantity, availabilityRawMaterial);
         Map<Integer, String> contraintComplete = buildContraintsWithAvailability(contraints, availabilityRawMaterial, fun, chemicalsQuantity);
         String variables = buildInitVariables(chemicalsQuantity);
-        String output = buildOutput(chemicalsQuantity);
+        String output = buildOutput(chemicalsQuantity, products);
         String solution = getSolution(output, variables, contraintComplete, chemicalsQuantity + rawMaterialsQuantity + 1);
         solution_txt.setText(solution);
         saveModel(solution, pathToSave);
