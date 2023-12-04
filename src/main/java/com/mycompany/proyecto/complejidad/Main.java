@@ -66,7 +66,7 @@ public class Main extends javax.swing.JFrame {
     }
 
     /*
-            output[0] = Integer.parseInt(data[2]);
+        output[0] = Integer.parseInt(data[2]);
         output[1] = Integer.parseInt(data[3]);
         output[2] = Integer.parseInt(data[4]);
      */
@@ -244,7 +244,7 @@ public class Main extends javax.swing.JFrame {
         StringBuilder variables = new StringBuilder();
         for (int i = 0; i < quantity; i++) {
             variables.append("var int: ".concat("x").concat(String.valueOf(i + 1)
-                    .concat("; ")));
+                    .concat("; ")).concat("\n"));
         }
         variables.append("var 0.0..100000000.0: ".concat("z;")); //variable solucion
         variables.append("\n");
@@ -252,18 +252,19 @@ public class Main extends javax.swing.JFrame {
         return variables.toString();
     }
 
+
     private String buildOutput(int quantity, ProductDto[] products) {
         StringBuilder variables = new StringBuilder();
-        variables.append("output[");
+        variables.append("output [");
         for (int i = 0; i < quantity; i++) {
-            variables.append("\"".concat(products[i].getName()).concat(" : \" ++ ")
+            variables.append("\"".concat(products[i].getName()).concat(" : \" ,")
                     .concat(" ")
                     .concat("show(").concat("x").concat(String.valueOf(i + 1)
-                    .concat(")").concat(" ++ ")
-                    .concat("\"\\n\"")
-                    .concat(",")));
+                            .concat(")").concat(" , ")
+                            .concat("\"\\n\"")
+                            .concat(",")));
             if ((i + 1) == quantity) { //terminamos variables, seguimos con ganancia(se puede hacer fuera del for también)
-                variables.append("\"Ganancia".concat(":\" , ")
+                variables.append("\"Ganancia".concat(":\" ,")
                         .concat("show(").concat("z")
                         .concat(")").concat(", "));
             }
@@ -374,28 +375,27 @@ public class Main extends javax.swing.JFrame {
     }
 
     private Map<Integer, String> buildContraintsWithAvailability(Map<Integer, String> contraints,
-            Integer[] availabilityRawMaterial, String fun, int numProducts) { //lega lo que devuelve buildContraints y el arreglo de disponilidad para establecer el menor igual
+                                                                 Integer[] availabilityRawMaterial, String fun, int numProducts) { //lega lo que devuelve buildContraints y el arreglo de disponilidad para establecer el menor igual
         StringBuilder contrainst = new StringBuilder();
         Map<Integer, String> contraintsResult = new HashMap();
         for (int i = 0; i < availabilityRawMaterial.length; i++) {
             contraintsResult.put(i, "constraint ".concat(contraints.get(i)).concat(" <= ")
                     .concat(String.valueOf(availabilityRawMaterial[i]))
-                    .concat(";"));
+                    .concat(";").concat("\n"));
         }
         contraintsResult.put(availabilityRawMaterial.length, "constraint z = ".concat(fun)
-                .concat(";")); //Constraint de la función de maximizar
+                .concat(";").concat("\n")); //Constraint de la función de maximizar
         int n = availabilityRawMaterial.length + numProducts;
         int j = 1;
         for (int i = availabilityRawMaterial.length + 1; i <= n; i++) {
             contraintsResult.put(i, "constraint ".concat("x")
                     .concat(String.valueOf(j))
-                    .concat(">=0;").concat("\n")); //contraints de no negatividad.
+                    .concat(" >= 0;")); //constraints de no negatividad.
             j++;
         }
 
         return contraintsResult;
     }
-
     private void saveModel(String content, String pathTosave) {
         try {
             // Crea el objeto Path desde la cadena de la ruta
@@ -413,7 +413,7 @@ public class Main extends javax.swing.JFrame {
     private void runMinizinc() throws InterruptedException {
         final StringBuilder result = new StringBuilder();
         try {
-            ProcessBuilder processBuilder = new ProcessBuilder("cmd", "/c", "minizinc --solver gecode c:\\models\\modelo.mzn");
+            ProcessBuilder processBuilder = new ProcessBuilder("cmd", "/c", "minizinc --solver COIN-BC c:\\models\\modelo.mzn");
             Process process = processBuilder.start();
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
             int exitCode = process.waitFor();
